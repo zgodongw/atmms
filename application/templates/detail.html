@@ -1,0 +1,308 @@
+{%extends 'base.html'%}
+
+{%block title%}
+<title>{{deviceID}}</title>
+<meta http-equiv="refresh" content="30">
+{%endblock%}
+
+
+{%block sidenav%}
+{%for user in profile%}
+<li class="parent"><a data-toggle="collapse" href="#sub-item-1" aria-expanded="true">
+	<em class="fa fa-navicon">&nbsp;</em> {{user.province}} <span data-toggle="collapse" aria-expanded="true"href="#sub-item-1" class="icon pull-right"><em class="fa fa-minus"></em></span>
+	</a>
+	<ul class="children collapse in" aria-expanded="true" id="sub-item-1">
+		{%for v in site%}
+		{%if v.province == user.province %}
+		<li class=""><a class="" href= {% url 'application:list' v.place %}>
+			<span class="fa fa-arrow-right">&nbsp;</span> {{ v.place }}
+        </a></li>
+        {%endif%}
+		{%endfor%}
+	</ul>
+</li>
+{%endfor%}
+{%endblock sidenav%}
+
+
+
+{%block content%}
+<div class="row">
+	<ol class="breadcrumb">
+		<li><a href="#">
+			<em class="fa fa-home"></em>
+		</a></li>
+		<li class="">Charts</li>
+	</ol>
+</div><!--/.row-->
+
+<div class="row">
+	<div class="col-lg-11">
+		<h1 class="page-header">Charts For {{deviceID}}</h1>
+	</div>
+</div><!--/.row-->
+
+<div class="row">
+	<div class="col-xs-6 col-md-3">
+		<div class="panel panel-default">
+			<div class="panel-body easypiechart-panel">
+				<h4>Transaction Speed: cs</h4>
+				<div class="easypiechart" id="easypiechart-teal" data-percent="{{transactionSpeed|last}}" ><span class="percent">{{transactionSpeed|last}}</span></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-6 col-md-3">
+		<div class="panel panel-default">
+			<div class="panel-body easypiechart-panel">
+					<h4>Download Speed: Mbps</h4>
+				<div class="easypiechart" id="easypiechart-blue" data-percent= "{{downloadSpeed|last}}" ><span class="percent">{{downloadSpeed|last}}</span></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-6 col-md-3">
+		<div class="panel panel-default">
+			<div class="panel-body easypiechart-panel">
+					<h4>Humidity: %</h4>
+				<div class="easypiechart" id="easypiechart-orange" data-percent="{{humidity|last}}" ><span class="percent">{{humidity|last}}%</span></div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-6 col-md-3">
+		<div class="panel panel-default">
+			<div class="panel-body easypiechart-panel">
+					<h4>Paper Level: %</h4>
+				<div class="easypiechart" id="easypiechart-red" data-percent="{{paperLevel|last}}" ><span class="percent">{{paperLevel|last}}%</span></div>
+			</div>
+		</div>
+	</div>
+</div><!--/.row-->
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				Temperature and Vibrations
+				<ul class="pull-right panel-settings panel-button-tab-right">
+					<li class="dropdown"><a class="pull-right dropdown-toggle" data-toggle="dropdown" href="#">
+						<em class="fa fa-cogs"></em>
+					</a>
+						<ul class="dropdown-menu dropdown-menu-right">
+							<li>
+								<ul class="dropdown-settings">
+									<li><a href="#">
+										<em class="fa fa-cog"></em> February
+									</a></li>
+									<li class="divider"></li>
+									<li><a href="#">
+										<em class="fa fa-cog"></em> March
+									</a></li>
+									<li class="divider"></li>
+									<li><a href="#">
+										<em class="fa fa-cog"></em> April
+									</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+			<div class="panel-body">
+				<div class="canvas-wrapper">
+					<canvas class="main-chart" id="line-chart" height="200" width="600"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+</div><!--/.row-->
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				Amount and Deposts
+				<ul class="pull-right panel-settings panel-button-tab-right">
+					<li class="dropdown"><a class="pull-right dropdown-toggle" data-toggle="dropdown" href="#">
+						<em class="fa fa-cogs"></em>
+					</a>
+						<ul class="dropdown-menu dropdown-menu-right">
+							<li>
+								<ul class="dropdown-settings">
+									<li><a href="#">
+										<em class="fa fa-cog"></em> February
+									</a></li>
+									<li class="divider"></li>
+									<li><a href="#">
+										<em class="fa fa-cog"></em> March
+									</a></li>
+									<li class="divider"></li>
+									<li><a href="#">
+										<em class="fa fa-cog"></em> April
+									</a></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<span class="pull-right clickable panel-toggle panel-button-tab-left"><em class="fa fa-toggle-up"></em></span></div>
+			<div class="panel-body">
+				<div class="canvas-wrapper">
+					<canvas class="main-chart" id="bar-chart" height="200" width="600"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+</div><!--/.row-->
+{%endblock%}
+
+{%load js%}
+
+
+{%block chart%}
+<script>
+var lineChartData = {
+		labels : {{timestamps|js}},
+		datasets : [
+			{
+				label: "Vibrations",
+				backgroundColor: "rgba(220, 220, 220,0.5)",
+				borderColor: "rgba(220, 220, 220, 1)",
+				pointBackgroundColor :"rgba(220, 220, 220, 1)",
+				pointBorderColor : "rgba(220, 220, 220, 1)",
+				data : {{vibrations|js}}
+			},
+			{
+				label: "Temperature",
+				backgroundColor: "rgba(48, 164, 255, 0.2)",
+				borderColor: "rgba(48, 164, 255, 1)",
+				pointBackgroundColor :"rgba(48, 164, 255, 1)",
+				pointBorderColor : "rgba(48, 164, 255, 1)",
+				data : {{temperatures|js}}
+			}
+		]
+	}
+
+var barChartData = {
+	labels : {{timestamps|js}},
+	datasets : [
+		{
+			label: "Deposits",
+			backgroundColor: "rgba(220, 220, 220, 0.2)",
+			hoverBackgroundColor: "rgba(220, 220, 220, 0.5)",
+			borderColor: "rgba(220, 220, 220, 1)",
+			borderWidth: 2,
+			data : {{cashDeposits|js}}
+		},
+		{
+			label: "Amount",
+			backgroundColor: "rgba(48, 164, 255, 0.2)",
+			hoverBackgroundColor: "rgba(48, 164, 255, 0.5)",
+			borderColor: "rgba(48, 164, 255, 1)",
+			borderWidth: 2,
+			data : {{cashAmount|js}}
+		}
+	]
+
+}
+
+</script>
+{%endblock%}
+<pre></pre>
+{%block data%}
+<script>
+window.onload = function () {
+var chart1 = document.getElementById("line-chart").getContext("2d");
+window.myLine = new Chart(chart1, {
+type: 'line',
+responsive: true,
+data: lineChartData,
+scaleLineColor: "rgba(0,0,0,.2)",
+scaleFontColor: "#c5c7cc",
+});
+var chart2 = document.getElementById("bar-chart").getContext("2d");
+window.myBar = new Chart(chart2, {
+type: 'bar',
+responsive: true,
+data: barChartData,
+scaleLineColor: "rgba(0,0,0,.2)",
+scaleFontColor: "#c5c7cc"
+});
+};
+
+
+/*
+setInterval(function () {
+	window.myLine.removeData()
+	window.myLine.addData([5.0, 23.0], "today");
+    }, 10000);
+*/
+
+
+
+function updateData(chart, label, data) {
+    chart.data.labels.push(label);
+    for (var i = 0; i < 2; i++) {
+		chart.data.datasets[i].data.push(data[i])
+	}
+    chart.update();
+}
+
+function removeData(chart) {
+    chart.data.labels.shift();
+    chart.data.datasets.forEach((dataset) => {
+        dataset.data.shift();
+    });
+    chart.update();
+}
+
+function addData() {
+	removeData(window.myLine)
+}
+
+var deviceID = "{{deviceID}}"
+var host = 'http://api-iotplatform.herokuapp.com/asset/activity/?q=' + deviceID
+
+setInterval(function(){
+	var proxyUrl = 'https://cors-anywhere.herokuapp.com/',
+    targetUrl = host;
+fetch(proxyUrl + targetUrl)
+  .then(blob => blob.json())
+  .then(data => {
+    console.table(data.slice(-1)[0]);
+	array = data.slice(-1)[0];
+
+	$('#easypiechart-teal').data('easyPieChart').update(parseInt(array['transactionSpeed']));
+	$('span', $('#easypiechart-teal')).text(array['transactionSpeed']);
+	
+	$('#easypiechart-blue').data('easyPieChart').update(parseInt(array['downloadSpeed']));
+	$('span', $('#easypiechart-blue')).text(array['downloadSpeed']);
+	
+	$('#easypiechart-orange').data('easyPieChart').update(parseInt(array['humidity']));
+	$('span', $('#easypiechart-orange')).text(array['humidity'] + "%");
+
+	$('#easypiechart-red').data('easyPieChart').update(parseInt(array['paperLevel']));
+	$('span', $('#easypiechart-red')).text(array['paperLevel'] + "%");
+
+
+	window.removeData(window.myLine)
+	window.updateData(window.myLine, "live", [array['vibrations'], array['temperature']]);
+    //document.querySelector("pre").innerHTML = JSON.stringify(data, null, 2);
+    return data;
+  })
+  .catch(e => {
+    console.log(e);
+    return e;
+  });
+
+}, 3000);
+
+</script>
+<!--
+<script>
+		$('#updatePieCharts').on('click', function(e) {
+		   e.preventDefault();
+		   var newValue = Math.floor(100 * Math.random());
+		   $('#easypiechart-red').data('easyPieChart').update(newValue);
+		   $('span', $('#easypiechart-red')).text(newValue + "%");
+		 });
+   </script> -->
+{%endblock%}

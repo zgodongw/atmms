@@ -1,0 +1,62 @@
+{%extends 'base.html'%}
+
+{%block title %}
+<title>{{place}}</title>
+{%endblock title %}
+
+
+
+{%block sidenav%}
+{%for user in profile%}
+<li class="parent"><a data-toggle="collapse" href="#sub-item-1" aria-expanded="true">
+	<em class="fa fa-navicon">&nbsp;</em> {{user.province}} <span data-toggle="collapse" aria-expanded="true"href="#sub-item-1" class="icon pull-right"><em class="fa fa-minus"></em></span>
+	</a>
+	<ul class="children collapse in" aria-expanded="true" id="sub-item-1">
+		{%for v in site%}
+		{%if v.province == user.province %}
+		<li class=""><a class="" href= {% url 'application:list' v.place %}>
+			<span class="fa fa-arrow-right">&nbsp;</span> {{ v.place }}
+        </a></li>
+        {%endif%}
+		{%endfor%}
+	</ul>
+</li>
+{%endfor%}
+{%endblock sidenav%}
+
+
+
+
+{%block content%}
+<div class="row">
+<ol class="breadcrumb">
+<li><a href="#">
+	<em class="fa fa-home"></em>
+</a></li>
+<li class="">List</li>
+</ol>
+</div><!--/.row-->
+
+<div class="row">
+<div class="col-lg-12">
+	<h2>Devices in {{place}}</h2>
+	<input type="search" class="form-control" id="input-search" placeholder="Search Devices..." >
+</div>
+<div class="searchable-container">
+	<!-- Item-->
+
+	{%for a in asset%}
+	<div class="items col-xs-12 col-sm-12 col-md-6 col-lg-6 clearfix">
+		<div class="info-block block-info clearfix">
+			<a href= {% url 'application:detail' a.deviceID %}>
+			<div class="square-box pull-left">
+				<span class="glyphicon glyphicon-modal-window glyphicon-lg"></span>
+			</div></a>
+			<h5> {{a.deviceName}} </h5>
+			<h4>Device ID: {{a.deviceID}}</h4>
+			<p>Asset ID: {{a.id}}</p>
+			<span>Location: {{a.location}} </span>
+		</div>
+	</div> <!--item-->
+	{%endfor%}
+{%endblock content%}
